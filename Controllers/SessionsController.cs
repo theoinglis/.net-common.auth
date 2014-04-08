@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Policy;
@@ -13,6 +14,7 @@ using Common.Auth.Services;
 using Common.Auth.WebTokens;
 using Common.Db.Repository;
 using Common.Db.UnitOfWork;
+using Common.Web.ExtensionMethods;
 
 namespace Common.Auth.Controllers
 {
@@ -58,18 +60,17 @@ namespace Common.Auth.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public virtual HttpResponseMessage IsAuthenticated()
+        public virtual HttpResponseMessage GetAuthenticatedId()
         {
-            var isAuthenticated = true;
             try
             {
+                int id;
                 _webTokenService.Authenticate(Request);
+                _sessionService.TryGetId(out id);
+                return Request.CreateResponse(HttpStatusCode.OK, id);
             }
-            catch (Exception)
-            {
-                isAuthenticated = false;
-            }
-            return Request.CreateResponse(HttpStatusCode.OK, isAuthenticated);
+            catch (Exception) {}
+            return Request.CreateResponse<object>(HttpStatusCode.OK, -1);
         }
 
         [HttpPost]
@@ -96,7 +97,9 @@ namespace Common.Auth.Controllers
             };
             CreateUser(registrationInfo, newCredentials);
 
-            var response = Request.CreateResponse(HttpStatusCode.OK);
+            var id = newCredentials.Id;
+            var response = Request.CreateResponse(HttpStatusCode.OK, id);
+            response.SetCookie("id", id.ToString());
             return _webTokenService.SetCookie(response, CreateIdentity(newCredentials), GetExpirationDate(newCredentials));
         }
 
@@ -125,7 +128,9 @@ namespace Common.Auth.Controllers
                     new AuthenticationException("The password provided is incorrect"));
             }
 
-            var response = Request.CreateResponse(HttpStatusCode.OK);
+            var id = matchingCredentials.Id;
+            var response = Request.CreateResponse(HttpStatusCode.OK, id);
+            response.SetCookie("id", id.ToString());
             return _webTokenService.SetCookie(response, CreateIdentity(matchingCredentials), GetExpirationDate(matchingCredentials));
         }
 
@@ -133,6 +138,7 @@ namespace Common.Auth.Controllers
         public virtual HttpResponseMessage Logout()
         {
             var response = Request.CreateResponse();
+            response.ClearCookie("id");
             return _webTokenService.ClearAuthentication(response);
         }
 

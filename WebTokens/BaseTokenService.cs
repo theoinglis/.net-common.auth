@@ -10,6 +10,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Http;
 using Common.Auth.Models;
+using Common.Web.ExtensionMethods;
 
 namespace Common.Auth.WebTokens
 {
@@ -81,24 +82,12 @@ namespace Common.Auth.WebTokens
 
         public void SetToken(HttpResponseMessage response, string token)
         {
-            response.Headers.AddCookies(
-                new List<CookieHeaderValue>
-                {
-                    new CookieHeaderValue("Authorization", token) {Path = "/"},
-                });
+            response.SetCookie("Authorization", token);
         }
 
         public HttpResponseMessage ClearToken(HttpResponseMessage response)
         {
-            response.Headers.AddCookies(
-                new List<CookieHeaderValue>
-                {
-                    new CookieHeaderValue("Authorization", string.Empty)
-                    {
-                        Path = "/", 
-                        Expires = DateTime.UtcNow.AddDays(-1)
-                    },
-                });
+            response.ClearCookie("Authorization");
             return response;
         }
 

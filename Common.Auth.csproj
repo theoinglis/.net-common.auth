@@ -80,11 +80,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common.Db\Common.Db.csproj">
+    <ProjectReference Include="..\.net-common.db\Common.Db.csproj">
       <Project>{30b4ae66-3aa2-42e3-b97b-dfaa934971b2}</Project>
       <Name>Common.Db</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Web\Common.Web.csproj">
+    <ProjectReference Include="..\.net-common.web\Common.Web.csproj">
       <Project>{72f7aaaf-1926-4df0-a488-d5e1d918b8ff}</Project>
       <Name>Common.Web</Name>
     </ProjectReference>
