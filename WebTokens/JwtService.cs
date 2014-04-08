@@ -43,7 +43,7 @@ namespace Common.Auth.WebTokens
                 Subject = identity,
                 TokenIssuerName = _name,
                 AppliesToAddress = _address,
-                Lifetime = new Lifetime(now, expiration),
+                Lifetime = new Lifetime(now, null),
                 SigningCredentials = new SigningCredentials(
                     new InMemorySymmetricSecurityKey(Key),
                     "http://www.w3.org/2001/04/xmldsig-more#hmac-sha256",

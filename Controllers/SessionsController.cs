@@ -40,7 +40,7 @@ namespace Common.Auth.Controllers
 
         protected abstract void CreateUser(TRegister registrationInfo, TCredential newCredentials);
 
-        protected virtual List<Claim> GetClaimsList()
+        protected virtual List<Claim> GetClaimsList(TCredential credentials)
         {
             return new List<Claim>();
         } 
@@ -51,7 +51,7 @@ namespace Common.Auth.Controllers
             {
                 new Claim("Id", credentials.Id.ToString()),
             };
-            baseClaims.AddRange(GetClaimsList());
+            baseClaims.AddRange(GetClaimsList(credentials));
 
             return new ClaimsIdentity(baseClaims);
         }
